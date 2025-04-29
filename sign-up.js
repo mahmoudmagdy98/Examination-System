@@ -21,7 +21,7 @@ form.addEventListener("submit", (event) => {
   const confirmPassword = document.getElementById("confirmPassword").value;
 
   if (!firstName || !lastName || !email || !password || !confirmPassword) {
-    //check if fields is not filled
+    //check if one or more of the fields is not filled
     errorMessage.style.color = "red";
     errorMessage.textContent = "please fill all the fields in the form";
     return;

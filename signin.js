@@ -1,16 +1,33 @@
-document.getElementById("but").addEventListener("submit",function(e){
-    e.preventDefault(); // دا بيمنع ان الداتا تتبعت في العادي من html غير لما نعالجها او الفالديشن يتحقق من الجافا اسكربت 
-    const email = document.getElementById("email").value.trim();
-    const password = document.getElementById("password").value.trim();
+const signinForm = document.getElementById("signin-form");
+const signinMessage = document.getElementById("signin-message");
 
-    // هنجيب الداتا اللي متخزنه ف الاستورتج 
-    const storage = localStorage.getItem("");// id input email in sign up الايميل الموجود في البيدج اللي محمود بيعملها 
-   ///الكوندشن هيبقا ان الايميل لو بيساوي الداتا اللي اتخزنت في الاستورج هيفتح الامتحان 
-    if(email===storage.email  && password === storage.password){
-        window.location.href="" // link page exam 
+signinForm.addEventListener("submit", (event) => {
+  event.preventDefault();
 
-    }
-    else{
-        document.getElementById("error").textContent="email not find ";
-    }
+  const emailInput = document.getElementById("email").value.trim();
+  const passwordInput = document.getElementById("password").value;
+
+  const storedUser = JSON.parse(localStorage.getItem("userData"));
+
+  if (!storedUser) {
+    signinMessage.style.color = "red";
+    signinMessage.textContent = "No user found. Please sign up first.";
+    return;
+  }
+
+  const encryptedInputPassword = CryptoJS.SHA256(passwordInput).toString();
+
+  if (emailInput === storedUser.email && encryptedInputPassword === storedUser.password) {
+    signinMessage.style.color = "green";
+    signinMessage.textContent = "Login successful!";
+
+
+    setTimeout(() => {
+      window.location.href = "examination.html";
+    }, 1000);
+
+  } else {
+    signinMessage.style.color = "red";
+    signinMessage.textContent = "Invalid email or password.";
+  }
 });
