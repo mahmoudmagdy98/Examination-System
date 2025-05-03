@@ -2,7 +2,7 @@ const form = document.getElementById("signup-form");
 const errorMessage = document.getElementById("error-message");
 
 function validateEmail(email) {
-  const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const re = /^[^\s@]+@(gmail\.com|yahoo\.com|hotmail\.com|outlook\.com|icloud\.com)$/i;
   return re.test(String(email).toLowerCase());
 }
 
@@ -11,8 +11,21 @@ function isOnlyLetters(str) {
   return re.test(str); //check if the string recieved achieved the regular expression
 }
 
+function showError(inputId, message) {
+  const errorSpan = document.getElementById(`${inputId}-error`);
+  errorSpan.style.color = "red";
+  errorSpan.textContent = message;
+}
+
+function clearError(inputId) {
+  const errorSpan = document.getElementById(`${inputId}-error`);
+  errorSpan.textContent = "";
+}
+
 form.addEventListener("submit", (event) => {
   event.preventDefault(); //preventing form from submitting data if validation is not achieved
+
+  let hasError = false;
 
   const firstName = document.getElementById("firstName").value.trim(); //trim to remove spaces
   const lastName = document.getElementById("lastName").value.trim();
@@ -20,42 +33,57 @@ form.addEventListener("submit", (event) => {
   const password = document.getElementById("password").value;
   const confirmPassword = document.getElementById("confirmPassword").value;
 
-  if (!firstName || !lastName || !email || !password || !confirmPassword) {
-    //check if one or more of the fields is not filled
-    errorMessage.style.color = "red";
-    errorMessage.textContent = "please fill all the fields in the form";
-    return;
+  if (!firstName) {
+    showError("firstName", "First name is required");
+    hasError = true;
+  } else if (!isOnlyLetters(firstName)) {
+    showError("firstName", "First name must contain only letters");
+    hasError = true;
+  } else {
+    clearError("firstName");
   }
 
-  if (!isOnlyLetters(firstName)) {
-    errorMessage.style.color = "red";
-    errorMessage.textContent = "your name must be only letters";
-    return;
+  if (!lastName) {
+    showError("lastName", "Last name is required");
+    hasError = true;
+  } else if (!isOnlyLetters(lastName)) {
+    showError("lastName", "Last name must contain only letters");
+    hasError = true;
+  } else {
+    clearError("lastName");
   }
 
-  if (!isOnlyLetters(lastName)) {
-    errorMessage.style.color = "red";
-    errorMessage.textContent = "your name must be only letters";
-    return;
+  if (!email) {
+    showError("email", "Email is required");
+    hasError = true;
+  } else if (!validateEmail(email)) {
+    showError("email", "Email must be a valid domain (gmail, yahoo, ...)");
+    hasError = true;
+  } else {
+    clearError("email");
   }
 
-  if (!validateEmail) {
-    errorMessage.style.color = "red";
-    errorMessage.textContent = "please enter a valid E-mail";
-    return;
+  if (!password) {
+    showError("password", "Password is required");
+    hasError = true;
+  } else if (password.length<6 || password.length > 10) {
+    showError("password", "Password must be more than 6 and less than 10 characters");
+    hasError = true;
+  } else {
+    clearError("password");
   }
 
-  if (password.length > 10) {
-    errorMessage.style.color = "red";
-    errorMessage.textContent = "your password must be less than 10 charachters";
-    return;
+  if (!confirmPassword) {
+    showError("confirmPassword", "Confirmation password is required");
+    hasError = true;
+  } else if (confirmPassword !== password) {
+    showError("confirmPassword", "Passwords do not match");
+    hasError = true;
+  } else {
+    clearError("confirmPassword");
   }
 
-  if (confirmPassword !== password) {
-    errorMessage.style.color = "red";
-    errorMessage.textContent = "Confirmation dosen't match pasword";
-    return;
-  }
+  if (hasError) return;
 
   const encryptedPassword = CryptoJS.SHA256(password).toString(); //to encrypt password
 

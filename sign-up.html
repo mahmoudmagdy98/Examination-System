@@ -13,10 +13,20 @@
         <h2>Sign up</h2>
         <form id="signup-form">
             <input type="text" id="firstName" placeholder="First Name" required>
+            <span id="firstName-error" class="error-message"></span>
+
             <input type="text" id="lastName" placeholder="Last Name" required>
+            <span id="lastName-error" class="error-message"></span>
+
             <input type="email" id="email" placeholder="E-mail" required>
+            <span id="email-error" class="error-message"></span>
+
             <input type="password" id="password" placeholder="password" required>
+            <span id="password-error" class="error-message"></span>
+
             <input type="password" id="confirmPassword" placeholder="Re-Enter password" required>
+            <span id="confirmPassword-error" class="error-message"></span>
+            
             <button type="submit">Submit</button>
             <p id="error-message"></p>
         </form>
