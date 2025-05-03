@@ -12,7 +12,7 @@ function isOnlyLetters(str) {
 }
 
 function showError(inputId, message) {
-  const errorSpan = document.getElementById(`${inputId}-error`);
+  const errorSpan = document.getElementById(`${inputId}-error`); //concatination of span id ,changes from input to other
   errorSpan.style.color = "red";
   errorSpan.textContent = message;
 }
