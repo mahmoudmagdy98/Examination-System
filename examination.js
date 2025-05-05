@@ -1,3 +1,13 @@
+window.onload = function () {
+  history.pushState(null, null, location.href);
+
+  window.onpopstate = function () {
+    history.pushState(null, null, location.href);
+  };
+};
+
+/************************************************************** */
+
 const questions = [
   {
     id: 1,
@@ -37,6 +47,7 @@ const questions = [
 ];
 
 
+
 let currentQuestion = 0;
 let score = 0;
 let timeLeft = 60;
@@ -45,20 +56,18 @@ let bookmarks = [];
 let answeredQuestions = new Array(questions.length).fill(false);
 let userAnswers = new Array(questions.length).fill(null);
 
-
 const questionEl = document.getElementById("question");
 const optionsEl = document.getElementById("options");
 const nextBtn = document.getElementById("nextBtn");
 const prevBtn = document.getElementById("prevBtn");
 const finishBtn = document.getElementById("finishBtn");
-const resultBox = document.getElementById("result-box");
-const scoreEl = document.getElementById("score");
 const timerEl = document.getElementById("timer");
 const bookmarkList = document.getElementById("bookmark-list");
+
 /********************************************* */
 
 function startQuiz() {
-  shuffle(questions); 
+  shuffle(questions);
   showQuestion();
   timer = setInterval(updateTimer, 1000);
 }
@@ -92,7 +101,6 @@ function showQuestion() {
   nextBtn.disabled = false;
 }
 
-
 /********************************************* */
 
 function shuffle(array) {
@@ -102,10 +110,7 @@ function shuffle(array) {
   }
 }
 
-
-
 /********************************************* */
-
 
 function addBookmark(index) {
   const questionId = questions[index].id;
@@ -119,7 +124,6 @@ function addBookmark(index) {
 
 function updateBookmarkList() {
   bookmarkList.innerHTML = "<h3>Bookmarked Questions:</h3>";
-
   bookmarks.forEach(id => {
     const index = questions.findIndex(q => q.id === id);
     const btn = document.createElement("button");
@@ -163,8 +167,8 @@ function selectAnswer(selected) {
   checkIfCanFinish();
 }
 
-
 /********************************************* */
+
 function reviewAnswers() {
   const unansweredQuestions = questions.filter((q, index) => !answeredQuestions[index]);
   if (unansweredQuestions.length > 0) {
@@ -174,13 +178,7 @@ function reviewAnswers() {
   }
 }
 
-finishBtn.addEventListener("click", () => {
-  reviewAnswers();
-  endQuiz();
-});
-
 /********************************************* */
-
 
 function checkIfCanFinish() {
   const allAnswered = answeredQuestions.every(val => val === true);
@@ -188,6 +186,7 @@ function checkIfCanFinish() {
     finishBtn.disabled = false;
   }
 }
+
 /********************************************* */
 
 function updateTimer() {
@@ -204,45 +203,48 @@ function updateTimer() {
 }
 
 /********************************************* */
+
 function endQuiz() {
   clearInterval(timer);
   timeLeft = 0;
-  timerEl.textContent = `Time Left: 0s`;
 
-  document.getElementById("quiz-box").classList.add("hidden");
-  resultBox.classList.remove("hidden");
+  // Store score in localStorage
+  localStorage.setItem("score", score);
+  localStorage.setItem("totalQuestions", questions.length);
 
-  const percentage = ((score / questions.length) * 100).toFixed(2);
-  scoreEl.textContent = `You scored ${percentage}% (${score} out of ${questions.length})`;
+  // Redirect to result page
+  window.location.href = "result.html";
 }
 
 /**************************************** */
+
 nextBtn.addEventListener("click", () => {
   if (currentQuestion < questions.length - 1) {
     currentQuestion++;
     showQuestion();
   } else {
-    alert("No more questions. You can finish if all answered or wait for time.");
+    // alert("No more questions. You can finish if all answered or wait for time.");
   }
 });
-/************************************* */
+
 prevBtn.addEventListener("click", () => {
   if (currentQuestion > 0) {
     currentQuestion--;
     showQuestion();
   }
 });
-/**************************************************** */
 
 finishBtn.addEventListener("click", () => {
+  reviewAnswers();
   endQuiz();
 });
 
-startQuiz();
 /************************************************************** */
+
 // Disable browser back button
 history.pushState(null, null, location.href);
 window.onpopstate = function () {
   history.pushState(null, null, location.href);
-  // alert("Back navigation is disabled during the exam.");
 };
+
+startQuiz();

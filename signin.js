@@ -23,7 +23,7 @@ signinForm.addEventListener("submit", (event) => {
 
 
     setTimeout(() => {
-      window.location.href = "examination.html";
+      window.location.replace("examination.html");
     }, 1000);
 
   } else {
