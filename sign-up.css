@@ -30,7 +30,7 @@ body {
 .illustration {
   flex: 1;
   background: #dbeafe;
-  padding: 20px;
+  /* padding: 20px; */
   display: flex;
   justify-content: center;
   align-items: center;
@@ -38,7 +38,7 @@ body {
 
 .illustration img {
   width: 100%;
-  max-width: 400px;
+  max-width: 500px;
   height: auto;
 }
 
