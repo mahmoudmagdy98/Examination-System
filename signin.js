@@ -23,7 +23,9 @@ signinForm.addEventListener("submit", (event) => {
 
 
     setTimeout(() => {
-      window.location.replace("examination.html");
+      // window.location.replace("examination.html");
+      window.location.replace('examination.html');
+
     }, 1000);
 
   } else {

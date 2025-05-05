@@ -104,6 +104,9 @@ form.addEventListener("submit", (event) => {
   console.log(savedData);
 
   setTimeout(() => {
+    // window.location.replace('signin.html');
+
+
     window.location.href = "signin.html"; // Redirect to sign-in page
   }, 1000);                               // Wait 1 second to show the success message
 }); 

@@ -233,7 +233,8 @@ function endQuiz() {
   localStorage.setItem("totalQuestions", questions.length);
 
   // Redirect to result page
-  window.location.href = "result.html";
+  // window.location.href = "result.html";
+  window.location.replace("result.html")
 }
 
 /**************************************** */
