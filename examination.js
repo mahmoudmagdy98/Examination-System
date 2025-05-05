@@ -7,6 +7,14 @@ window.onload = function () {
 };
 
 /************************************************************** */
+window.addEventListener("beforeunload", function (e) {
+  e.preventDefault(); 
+  e.returnValue = ''; 
+});
+
+
+
+/*************************************************************** */
 
 const questions = [
   {
