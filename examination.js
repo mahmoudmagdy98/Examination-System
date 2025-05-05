@@ -70,9 +70,29 @@ function startQuiz() {
   shuffle(questions);
   showQuestion();
   timer = setInterval(updateTimer, 1000);
+  enterFullScreen();
 }
 
 /********************************************* */
+function enterFullScreen() {
+  const elem = document.documentElement; 
+  if (elem.requestFullscreen) {
+    elem.requestFullscreen();
+  } else if (elem.webkitRequestFullscreen) {
+    elem.webkitRequestFullscreen();
+  } else if (elem.msRequestFullscreen) {
+    elem.msRequestFullscreen();
+  }
+}
+
+document.addEventListener("fullscreenchange", () => {
+  if (!document.fullscreenElement) {
+    alert("You exited fullscreen. The exam will end.");
+    endQuiz();
+  }
+});
+
+/************************************************* */
 
 function showQuestion() {
   const q = questions[currentQuestion];
@@ -247,4 +267,8 @@ window.onpopstate = function () {
   history.pushState(null, null, location.href);
 };
 
-startQuiz();
+document.getElementById("startBtn").addEventListener("click", function () {
+  this.style.display = "none";
+
+  startQuiz(); 
+});

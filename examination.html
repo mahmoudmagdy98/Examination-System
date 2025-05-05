@@ -165,6 +165,28 @@ h1 {
     opacity: 1;
   }
 }
+#startBtn {
+  background-color: #007bff; /* أزرق هادئ */
+  color: white;
+  padding: 12px 24px;
+  font-size: 18px;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+#startBtn:hover {
+  background-color: #0056b3;
+  transform: scale(1.05);
+}
+
+#startBtn:active {
+  background-color: #004085;
+  transform: scale(0.98);
+}
 
 
   </style>
@@ -199,6 +221,8 @@ h1 {
     <h3>Bookmarked Questions:</h3>
     <!-- Filled dynamically -->
   </div>
+
+  <button id="startBtn">Start Exam</button>
 
   <script src="examination.js"></script>
 </body>
