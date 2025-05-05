@@ -1,39 +1,43 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link rel="stylesheet" href="sign-up.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Student Sign Up</title>
+  <link rel="stylesheet" href="sign-up.css" />
 </head>
 <body>
-
-
-    <div class="sign-up">
-        <h2>Sign up</h2>
-        <form id="signup-form">
-            <input type="text" id="firstName" placeholder="First Name" required>
-            <span id="firstName-error" class="error-message"></span>
-
-            <input type="text" id="lastName" placeholder="Last Name" required>
-            <span id="lastName-error" class="error-message"></span>
-
-            <input type="email" id="email" placeholder="E-mail" required>
-            <span id="email-error" class="error-message"></span>
-
-            <input type="password" id="password" placeholder="password" required>
-            <span id="password-error" class="error-message"></span>
-
-            <input type="password" id="confirmPassword" placeholder="Re-Enter password" required>
-            <span id="confirmPassword-error" class="error-message"></span>
-            
-            <button type="submit">Submit</button>
-            <p id="error-message"></p>
-        </form>
-
+  <div class="wrapper">
+    <div class="illustration">
+      <img src="student-signup-page-ui-with-blue-background-flat-illustration_582637-397.avif'" alt="Student Illustration">
     </div>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script> 
-    <script  src="sign-up.js"></script>
-    
+
+    <div class="form-box">
+      <h2>Student Sign Up</h2>
+      <form id="signup-form">
+        <input type="text" id="firstName" placeholder="First Name" required />
+        <span id="firstName-error" class="error-message"></span>
+
+        <input type="text" id="lastName" placeholder="Last Name" required />
+        <span id="lastName-error" class="error-message"></span>
+
+        <input type="email" id="email" placeholder="Email Address" required />
+        <span id="email-error" class="error-message"></span>
+
+        <input type="password" id="password" placeholder="Password" required />
+        <span id="password-error" class="error-message"></span>
+
+        <input type="password" id="confirmPassword" placeholder="Confirm Password" required />
+        <span id="confirmPassword-error" class="error-message"></span>
+
+        <button type="submit">Sign Up</button>
+        <p id="error-message"></p>
+
+      </form>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+  <script src="sign-up.js"></script>
 </body>
 </html>
