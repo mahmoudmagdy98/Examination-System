@@ -7,11 +7,50 @@
     <link rel="stylesheet" href="result.css">
 </head>
 <body>
-    <div class="result-box">
-        <h1>🌟 Your Final Score</h1>
-        <p id="score" class="score">...</p>
-        <button class="btn" onclick="goBack()">🔁 Retry</button>
-      </div>
-      <script src="result.js"></script>
+    <div class="container">
+        <div class="header">
+            <h1>Exam Results</h1>
+            <p>Your performance summary</p>
+        </div>
+        <div class="result-content">
+            <div class="score-section">
+                <div class="score-circle">
+                    <div class="score-value" id="score">0%</div>
+                </div>
+            </div>
+            <div class="stats-section">
+                <div class="stat-card">
+                    <div class="stat-value" id="correctAnswers">0</div>
+                    <div class="stat-label">Correct Answers</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="totalQuestions">0</div>
+                    <div class="stat-label">Total Questions</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="timeTaken">0s</div>
+                    <div class="stat-label">Time Taken</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="accuracy">0%</div>
+                    <div class="stat-label">Accuracy</div>
+                </div>
+            </div>
+            <div class="buttons">
+                <button class="btn btn-primary" onclick="  window.location.replace('/examination.html');
+                ">
+                    <i class="fas fa-redo"></i>
+                    Try Again
+                </button>
+                <button class="btn btn-secondary" onclick="window.location.href='index.html'">
+                    <i class="fas fa-home"></i>
+                    Back to Home
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ********************************** -->
+     <script src="result.js"></script>
 </body>
 </html>

@@ -1,55 +1,243 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --primary: #6c5ce7;
+  --secondary: #a29bfe;
+  --accent: #fd79a8;
+  --success: #00b894;
+  --text: #2d3436;
+  --text-light: #636e72;
+  --bg: #f0f2f5;
+  --white: #ffffff;
+  --shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
 body {
-    font-family: 'Cairo', sans-serif;
-    background: linear-gradient(to right, #74ebd5, #9face6);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 100vh;
-    margin: 0;
-    direction: rtl;
+  font-family: 'Poppins', sans-serif;
+  background: var(--bg);
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  color: var(--text);
+}
+
+.container {
+  background: var(--white);
+  width: 100%;
+  max-width: 900px;
+  border-radius: 30px;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  position: relative;
+}
+
+.header {
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  padding: 40px;
+  text-align: center;
+  color: var(--white);
+  position: relative;
+  overflow: hidden;
+}
+
+.header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23ffffff' fill-opacity='0.1' fill-rule='evenodd'/%3E%3C/svg%3E");
+  opacity: 0.5;
+}
+
+.header h1 {
+  font-size: 36px;
+  font-weight: 600;
+  margin-bottom: 10px;
+  position: relative;
+}
+
+.header p {
+  font-size: 18px;
+  opacity: 0.9;
+  position: relative;
+}
+
+.result-content {
+  padding: 40px;
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 40px;
+}
+
+.score-section {
+  text-align: center;
+}
+
+.score-circle {
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  background: var(--white);
+  margin: 0 auto 20px;
+  position: relative;
+  box-shadow: var(--shadow);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 15px solid #f0f2f5;
+}
+
+.score-circle::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 15px solid var(--primary);
+  clip-path: polygon(50% 50%, 50% 0%, 50% 0%, 50% 0%, 50% 0%, 50% 0%, 50% 0%, 50% 0%);
+  animation: fillProgress 2s linear forwards;
+}
+
+@keyframes fillProgress {
+  0% {
+      clip-path: polygon(50% 50%, 50% 0%, 50% 0%, 50% 0%, 50% 0%, 50% 0%, 50% 0%, 50% 0%);
+  }
+  100% {
+      clip-path: var(--progress-clip);
+  }
+}
+
+.score-value {
+  font-size: 48px;
+  font-weight: 700;
+  color: var(--primary);
+  opacity: 0;
+  transform: scale(0.5);
+  transition: all 0.5s ease;
+}
+
+.score-value.loaded {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.stats-section {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+.stat-card {
+  background: var(--white);
+  padding: 25px;
+  border-radius: 20px;
+  text-align: center;
+  box-shadow: var(--shadow);
+  transition: transform 0.3s ease;
+  border: 2px solid #f0f2f5;
+}
+
+.stat-card:hover {
+  transform: translateY(-5px);
+  border-color: var(--primary);
+}
+
+.stat-value {
+  font-size: 36px;
+  font-weight: 600;
+  color: var(--primary);
+  margin-bottom: 10px;
+}
+
+.stat-label {
+  color: var(--text-light);
+  font-size: 16px;
+}
+
+.buttons {
+  grid-column: 1 / -1;
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.btn {
+  padding: 15px 30px;
+  border: none;
+  border-radius: 15px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 180px;
+  justify-content: center;
+}
+
+.btn-primary {
+  background: var(--primary);
+  color: var(--white);
+}
+
+.btn-secondary {
+  background: var(--accent);
+  color: var(--white);
+}
+
+.btn:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow);
+}
+
+.btn i {
+  font-size: 18px;
+}
+
+@media (max-width: 768px) {
+  .result-content {
+      grid-template-columns: 1fr;
   }
 
-  .result-box {
-    background: white;
-    padding: 40px;
-    border-radius: 20px;
-    box-shadow: 0 0 30px rgba(0,0,0,0.2);
-    text-align: center;
-    animation: fadeIn 1s ease-in-out;
-    width: 90%;
-    max-width: 400px;
+  .header {
+      padding: 30px;
   }
 
-  .result-box h1 {
-    margin-bottom: 20px;
-    color: #333;
+  .header h1 {
+      font-size: 28px;
   }
 
-  .score {
-    font-size: 32px;
-    font-weight: bold;
-    color: #4caf50;
-    margin: 20px 0;
+  .result-content {
+      padding: 30px;
+  }
+
+  .score-circle {
+      width: 150px;
+      height: 150px;
+  }
+
+  .score-value {
+      font-size: 36px;
+  }
+
+  .stats-section {
+      grid-template-columns: 1fr;
+  }
+
+  .buttons {
+      flex-direction: column;
   }
 
   .btn {
-    display: inline-block;
-    background-color: #4caf50;
-    color: white;
-    padding: 10px 20px;
-    margin-top: 20px;
-    border: none;
-    border-radius: 10px;
-    cursor: pointer;
-    font-size: 18px;
-    transition: background-color 0.3s ease;
+      width: 100%;
   }
-
-  .btn:hover {
-    background-color: #45a049;
-  }
-
-  @keyframes fadeIn {
-    from {opacity: 0; transform: scale(0.95);}
-    to {opacity: 1; transform: scale(1);}
-  }
+}
