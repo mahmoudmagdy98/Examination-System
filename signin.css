@@ -89,19 +89,5 @@ body {
   background-color: #2563eb;
 }
 
-/* Message */
-#signin-message {
-  text-align: center;
-  font-size: 14px;
-  margin-top: 12px;
-}
 
-.success-message {
-  color: green;
-  font-size: 13px;
-}
 
-.error-message {
-  color: red;
-  font-size: 13px;
-}

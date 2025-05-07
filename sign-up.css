@@ -88,23 +88,8 @@ body {
 #signup-form button:hover {
   background-color: #2563eb;
 }
+p{
+  color: gray;
+}
 
 /* Errors */
-.error-message {
-  color: red;
-  font-size: 12px;
-  margin-top: 5px;
-}
-
-.success-message {
-  color: green;
-  font-size: 12px;
-  margin-top: 5px;
-}
-
-
-#error-message {
-  text-align: center;
-  font-size: 14px;
-  margin-top: 12px;
-}
