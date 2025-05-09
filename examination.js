@@ -5,6 +5,8 @@ window.onunload = () => null;
 history.pushState(null, null, location.href);
 window.onpopstate = () => history.pushState(null, null, location.href);
 
+
+
 /********* Questions **********/
 const questions = [
   { id: 1, question: "What is the capital of France?", options: ["Madrid", "Berlin", "Paris", "London"], answer: "Paris" },
@@ -14,6 +16,15 @@ const questions = [
   { id: 5, question: "Which language runs in the browser?", options: ["Python", "C", "Java", "JavaScript"], answer: "JavaScript" }
 ];
 
+// Function to shuffle array
+function shuffleArray(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+}
+
 let currentQuestion = 0;
 let score = 0;
 let timeLeft = 60;
@@ -21,6 +32,7 @@ let timer;
 let answeredQuestions = new Array(questions.length).fill(false);
 let userAnswers = new Array(questions.length).fill(null);
 let bookmarkedQuestions = new Set();
+let shuffledQuestions = [];
 
 const questionEl = document.getElementById("question");
 const optionsEl = document.getElementById("options");
@@ -38,15 +50,23 @@ function startQuiz() {
   answeredQuestions.fill(false);
   userAnswers.fill(null);
   bookmarkedQuestions.clear();
+  
+  // Shuffle questions and their options
+  shuffledQuestions = questions.map(q => ({
+    ...q,
+    options: shuffleArray([...q.options])
+  }));
+  shuffledQuestions = shuffleArray([...shuffledQuestions]);
 
   showQuestion();
   updateBookmarkDisplay();
+  updateBookmarkButtonState();
   timer = setInterval(updateTimer, 1000);
 }
 
 /********** Show Question **********/
 function showQuestion() {
-  const q = questions[currentQuestion];
+  const q = shuffledQuestions[currentQuestion];
   questionEl.textContent = q.question;
   optionsEl.innerHTML = "";
 
@@ -70,16 +90,35 @@ function showQuestion() {
   prevBtn.disabled = currentQuestion === 0;
   nextBtn.disabled = currentQuestion === questions.length - 1;
 
+  // Only show unanswered warning when last question is answered
+  if (currentQuestion === questions.length - 1 && answeredQuestions[currentQuestion]) {
+    finishBtn.classList.add('pulse-animation');
+    const firstUnansweredIndex = answeredQuestions.findIndex(a => !a);
+    if (firstUnansweredIndex !== -1) {
+      finishBtn.innerHTML = `Finish (Question ${firstUnansweredIndex + 1} not answered)`;
+      finishBtn.classList.add('has-unanswered');
+    } else {
+      finishBtn.innerHTML = 'Finish';
+      finishBtn.classList.remove('has-unanswered');
+    }
+  } else {
+    finishBtn.classList.remove('pulse-animation');
+    finishBtn.innerHTML = 'Finish';
+    finishBtn.classList.remove('has-unanswered');
+  }
+
   const progressBar = document.getElementById('progress-bar');
   if (progressBar) {
     progressBar.style.width = `${((currentQuestion + 1) / questions.length) * 100}%`;
   }
+
+  updateBookmarkButtonState();
 }
 
 /********** Select Answer **********/
 function selectAnswer(selected) {
   const qIndex = currentQuestion;
-  const correct = questions[qIndex].answer;
+  const correct = shuffledQuestions[qIndex].answer;
 
   const buttons = optionsEl.querySelectorAll("button");
   buttons.forEach(btn => btn.classList.remove("selected"));
@@ -90,6 +129,35 @@ function selectAnswer(selected) {
   if (!answeredQuestions[qIndex]) {
     answeredQuestions[qIndex] = true;
     if (selected === correct) score++;
+    
+    // Only add unanswered questions to bookmarks when answering the last question
+    if (currentQuestion === questions.length - 1) {
+      let addedQuestions = false;
+      // Add all unanswered questions to bookmarks
+      answeredQuestions.forEach((answered, index) => {
+        if (!answered) {
+          bookmarkedQuestions.add(index);
+          addedQuestions = true;
+        }
+      });
+      
+      // Only show animation if questions were actually added
+      if (addedQuestions) {
+        updateBookmarkDisplay();
+        updateBookmarkButtonState();
+      }
+
+      // Update finish button immediately
+      finishBtn.classList.add('pulse-animation');
+      const firstUnansweredIndex = answeredQuestions.findIndex(a => !a);
+      if (firstUnansweredIndex !== -1) {
+        finishBtn.innerHTML = `Finish (Question ${firstUnansweredIndex + 1} not answered)`;
+        finishBtn.classList.add('has-unanswered');
+      } else {
+        finishBtn.innerHTML = 'Finish';
+        finishBtn.classList.remove('has-unanswered');
+      }
+    }
   } else {
     const previous = userAnswers[qIndex];
     if (previous !== correct && selected === correct) score++;
@@ -98,6 +166,7 @@ function selectAnswer(selected) {
 
   userAnswers[qIndex] = selected;
   checkIfCanFinish();
+  updateBookmarkButtonState();
 }
 
 /********** Bookmark **********/
@@ -120,7 +189,7 @@ function updateBookmarkDisplay() {
   content.innerHTML = '';
 
   if (bookmarkedQuestions.size === 0) {
-    content.innerHTML = `<div class="empty-bookmarks"><i class="fas fa-bookmark"></i><p>لا توجد أسئلة محفوظة</p></div>`;
+    content.innerHTML = `<div class="empty-bookmarks"><i class="fas fa-bookmark"></i><p>No bookmarked questions</p></div>`;
     return;
   }
 
@@ -156,7 +225,7 @@ prevBtn.addEventListener("click", () => {
 finishBtn.addEventListener("click", () => {
   const unanswered = answeredQuestions.filter(a => !a).length;
   if (unanswered > 0) {
-    if (confirm(`لديك ${unanswered} أسئلة لم تتم الإجابة عليها. هل تريد إنهاء الامتحان؟`)) {
+    if (confirm(`You have ${unanswered} unanswered questions. Do you want to finish the exam?`)) {
       endQuiz();
     }
   } else {
@@ -176,6 +245,14 @@ function updateTimer() {
 
 /********** Finish Quiz **********/
 function endQuiz() {
+  // Bookmark unanswered questions
+  answeredQuestions.forEach((answered, index) => {
+    if (!answered) {
+      bookmarkedQuestions.add(index);
+    }
+  });
+  updateBookmarkDisplay();
+
   if (document.exitFullscreen) {
     document.exitFullscreen();
   } else if (document.webkitExitFullscreen) { /* Safari */
@@ -189,8 +266,7 @@ function endQuiz() {
   localStorage.setItem("totalQuestions", questions.length);
  
   // Redirect to result page
-  // window.location.href = "result.html";
-  window.location.replace("result.html")
+  window.location.replace("result.html");
 }
 
 /********** Check Finish State **********/
@@ -210,11 +286,9 @@ document.getElementById('closeBookmark').addEventListener('click', () => {
 });
 
 document.getElementById('clearBookmarks').addEventListener('click', () => {
-  if (confirm('هل أنت متأكد من مسح جميع الإشارات المرجعية؟')) {
-    bookmarkedQuestions.clear();
-    updateBookmarkDisplay();
-    showQuestion();
-  }
+  bookmarkedQuestions.clear();
+  updateBookmarkDisplay();
+  showQuestion();
 });
 
 /********** Start Button **********/
@@ -229,6 +303,85 @@ startBtn.addEventListener('click', () => {
     elem.msRequestFullscreen();
   }
   
+  // Add keyboard event listeners to window
+  window.addEventListener('keydown', handleKeyPress, true);
+  
   startBtn.style.display = 'none';
+  document.getElementById('bookmarkToggle').style.display = 'flex'; // Show bookmark button
   startQuiz();
 });
+
+// Function to handle key press
+function handleKeyPress(e) {
+  // Only handle keys if in fullscreen
+  if (document.fullscreenElement || 
+      document.webkitFullscreenElement || 
+      document.mozFullScreenElement ||
+      document.msFullscreenElement) {
+    
+    // Show confirmation dialog for ESC key
+    if (e.key === 'Escape' || e.keyCode === 27) {
+      e.preventDefault();
+      e.stopPropagation();
+      
+      // Show native confirm dialog
+      if (confirm('هل أنت متأكد من الخروج من الامتحان؟')) {
+        endQuiz();
+      }
+      
+      return false;
+    }
+  }
+}
+
+// Remove keyboard event listeners when exiting fullscreen
+document.addEventListener('fullscreenchange', handleFullscreenChange);
+document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+document.addEventListener('mozfullscreenchange', handleFullscreenChange);
+document.addEventListener('MSFullscreenChange', handleFullscreenChange);
+
+function handleFullscreenChange() {
+  if (
+    !document.fullscreenElement &&
+    !document.webkitFullscreenElement &&
+    !document.mozFullScreenElement &&
+    !document.msFullscreenElement
+  ) {
+    // عرض النافذة بدل endQuiz مباشرة
+    document.getElementById('confirmExitModal').style.display = 'flex';
+  }
+}
+
+document.getElementById('confirmExitBtn').addEventListener('click', () => {
+  endQuiz();
+});
+
+document.getElementById('cancelExitBtn').addEventListener('click', () => {
+  document.getElementById('confirmExitModal').style.display = 'none';
+
+  const elem = document.documentElement;
+  if (elem.requestFullscreen) {
+    elem.requestFullscreen();
+  } else if (elem.webkitRequestFullscreen) {
+    elem.webkitRequestFullscreen();
+  }
+});
+
+document.addEventListener('fullscreenchange', handleFullscreenChange);
+document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+document.addEventListener('mozfullscreenchange', handleFullscreenChange);
+document.addEventListener('MSFullscreenChange', handleFullscreenChange);
+
+
+// Add new function to update bookmark button state
+function updateBookmarkButtonState() {
+  const bookmarkToggle = document.getElementById('bookmarkToggle');
+  const hasUnanswered = answeredQuestions.some(a => !a);
+  const hasBookmarks = bookmarkedQuestions.size > 0;
+  
+  if (hasUnanswered && hasBookmarks) {
+    bookmarkToggle.classList.add('pulse-animation');
+  } else {
+    bookmarkToggle.classList.remove('pulse-animation');
+  }
+}
