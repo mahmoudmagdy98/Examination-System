@@ -42,6 +42,7 @@ const finishBtn = document.getElementById("finishBtn");
 const timerEl = document.getElementById("timer");
 const startBtn = document.getElementById("startBtn");
 
+
 /********** Start Quiz **********/
 function startQuiz() {
   currentQuestion = 0;
@@ -304,13 +305,37 @@ startBtn.addEventListener('click', () => {
   }
   
   // Add keyboard event listeners to window
-  window.addEventListener('keydown', handleKeyPress, true);
+//   window.addEventListener('keydown', handleKeyPress, true);
+
   
   startBtn.style.display = 'none';
   document.getElementById('bookmarkToggle').style.display = 'flex'; // Show bookmark button
   startQuiz();
 });
 
+/************************ */
+
+
+
+
+document.addEventListener('keydown', function (e) {
+  if (
+    document.fullscreenElement ||
+    document.webkitFullscreenElement ||
+    document.mozFullScreenElement ||
+    document.msFullscreenElement
+  ) {
+    const allowedKeys = []; 
+
+    if (!allowedKeys.includes(e.key)) {
+      e.preventDefault();
+      e.stopPropagation();
+      return false;
+    }
+  }
+}, true);
+
+/************************** */
 // Function to handle key press
 function handleKeyPress(e) {
   // Only handle keys if in fullscreen
@@ -347,7 +372,6 @@ function handleFullscreenChange() {
     !document.mozFullScreenElement &&
     !document.msFullscreenElement
   ) {
-    // عرض النافذة بدل endQuiz مباشرة
     document.getElementById('confirmExitModal').style.display = 'flex';
   }
 }
