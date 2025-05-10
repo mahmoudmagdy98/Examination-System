@@ -347,7 +347,7 @@ function handleFullscreenChange() {
     !document.mozFullScreenElement &&
     !document.msFullscreenElement
   ) {
-    // عرض النافذة بدل endQuiz مباشرة
+    // end quiz card 
     document.getElementById('confirmExitModal').style.display = 'flex';
   }
 }
