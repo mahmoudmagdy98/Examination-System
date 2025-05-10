@@ -88,7 +88,9 @@ form.addEventListener("submit", (event) => {
   });
 
   if (hasError) return;
+  
 
+  /////////////local storage creation:
   const firstName = document.getElementById("firstName").value.trim();
   const lastName = document.getElementById("lastName").value.trim();
   const email = document.getElementById("email").value.trim();

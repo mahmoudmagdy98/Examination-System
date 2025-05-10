@@ -372,6 +372,7 @@ function handleFullscreenChange() {
     !document.mozFullScreenElement &&
     !document.msFullscreenElement
   ) {
+    // عرض النافذة بدل endQuiz مباشرة
     document.getElementById('confirmExitModal').style.display = 'flex';
   }
 }
