@@ -1,9 +1,9 @@
 // Prevent Back Navigation
-window.history.forward();
-setTimeout(() => window.history.forward(), 0);
-window.onunload = () => null;
-history.pushState(null, null, location.href);
-window.onpopstate = () => history.pushState(null, null, location.href);
+// window.history.forward();
+// setTimeout(() => window.history.forward(), 0);
+// window.onunload = () => null;
+// history.pushState(null, null, location.href);
+// window.onpopstate = () => history.pushState(null, null, location.href);
 
 // Questions Data
 const questions = [
@@ -269,15 +269,15 @@ document.addEventListener('keydown', e => {
   }
 }, true);
 
-function handleKeyPress(e) {
-  if (document.fullscreenElement || document.webkitFullscreenElement) {
-    if (e.key === 'Escape' || e.keyCode === 27) {
-      e.preventDefault();
-      e.stopPropagation();
-      if (confirm('هل أنت متأكد من الخروج من الامتحان؟')) endQuiz();
-    }
-  }
-}
+// function handleKeyPress(e) {
+//   if (document.fullscreenElement || document.webkitFullscreenElement) {
+//     if (e.key === 'Escape' || e.keyCode === 27) {
+//       e.preventDefault();
+//       e.stopPropagation();
+//       if (confirm('هل أنت متأكد من الخروج من الامتحان؟')) endQuiz();
+//     }
+//   }
+// }
 
 function handleFullscreenChange() {
   if (!document.fullscreenElement && !document.webkitFullscreenElement) {

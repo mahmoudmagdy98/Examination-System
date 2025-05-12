@@ -115,6 +115,6 @@ form.addEventListener("submit", (event) => {
   console.log(users);
 
   setTimeout(() => {
-    window.location.href = "signin.html";
+    window.location.replace("signin.html") ;
   }, 1000);
 });
