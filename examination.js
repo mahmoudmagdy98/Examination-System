@@ -1,13 +1,11 @@
-/********* Prevent Back Navigation **********/
+// Prevent Back Navigation
 window.history.forward();
 setTimeout(() => window.history.forward(), 0);
 window.onunload = () => null;
 history.pushState(null, null, location.href);
 window.onpopstate = () => history.pushState(null, null, location.href);
 
-
-
-/********* Questions **********/
+// Questions Data
 const questions = [
   { id: 1, question: "What is the capital of France?", options: ["Madrid", "Berlin", "Paris", "London"], answer: "Paris" },
   { id: 2, question: "2 + 2 equals?", options: ["3", "4", "5", "2"], answer: "4" },
@@ -16,7 +14,7 @@ const questions = [
   { id: 5, question: "Which language runs in the browser?", options: ["Python", "C", "Java", "JavaScript"], answer: "JavaScript" }
 ];
 
-// Function to shuffle array
+// Shuffle Utility
 function shuffleArray(array) {
   for (let i = array.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -25,6 +23,7 @@ function shuffleArray(array) {
   return array;
 }
 
+// Global Variables
 let currentQuestion = 0;
 let score = 0;
 let timeLeft = 60;
@@ -34,6 +33,7 @@ let userAnswers = new Array(questions.length).fill(null);
 let bookmarkedQuestions = new Set();
 let shuffledQuestions = [];
 
+// DOM Elements
 const questionEl = document.getElementById("question");
 const optionsEl = document.getElementById("options");
 const nextBtn = document.getElementById("nextBtn");
@@ -42,8 +42,7 @@ const finishBtn = document.getElementById("finishBtn");
 const timerEl = document.getElementById("timer");
 const startBtn = document.getElementById("startBtn");
 
-
-/********** Start Quiz **********/
+// Start Quiz
 function startQuiz() {
   currentQuestion = 0;
   score = 0;
@@ -51,13 +50,11 @@ function startQuiz() {
   answeredQuestions.fill(false);
   userAnswers.fill(null);
   bookmarkedQuestions.clear();
-  
-  // Shuffle questions and their options
-  shuffledQuestions = questions.map(q => ({
+
+  shuffledQuestions = shuffleArray(questions.map(q => ({
     ...q,
     options: shuffleArray([...q.options])
-  }));
-  shuffledQuestions = shuffleArray([...shuffledQuestions]);
+  })));
 
   showQuestion();
   updateBookmarkDisplay();
@@ -65,7 +62,7 @@ function startQuiz() {
   timer = setInterval(updateTimer, 1000);
 }
 
-/********** Show Question **********/
+// Display Question
 function showQuestion() {
   const q = shuffledQuestions[currentQuestion];
   questionEl.textContent = q.question;
@@ -74,9 +71,7 @@ function showQuestion() {
   q.options.forEach(option => {
     const btn = document.createElement("button");
     btn.textContent = option;
-    if (userAnswers[currentQuestion] === option) {
-      btn.classList.add("selected");
-    }
+    if (userAnswers[currentQuestion] === option) btn.classList.add("selected");
     btn.onclick = () => selectAnswer(option);
     optionsEl.appendChild(btn);
   });
@@ -91,74 +86,24 @@ function showQuestion() {
   prevBtn.disabled = currentQuestion === 0;
   nextBtn.disabled = currentQuestion === questions.length - 1;
 
-  // Only show unanswered warning when last question is answered
-  if (currentQuestion === questions.length - 1 && answeredQuestions[currentQuestion]) {
-    finishBtn.classList.add('pulse-animation');
-    const firstUnansweredIndex = answeredQuestions.findIndex(a => !a);
-    if (firstUnansweredIndex !== -1) {
-      finishBtn.innerHTML = `Finish (Question ${firstUnansweredIndex + 1} not answered)`;
-      finishBtn.classList.add('has-unanswered');
-    } else {
-      finishBtn.innerHTML = 'Finish';
-      finishBtn.classList.remove('has-unanswered');
-    }
-  } else {
-    finishBtn.classList.remove('pulse-animation');
-    finishBtn.innerHTML = 'Finish';
-    finishBtn.classList.remove('has-unanswered');
-  }
-
-  const progressBar = document.getElementById('progress-bar');
-  if (progressBar) {
-    progressBar.style.width = `${((currentQuestion + 1) / questions.length) * 100}%`;
-  }
-
+  handleFinishButtonDisplay();
+  updateProgressBar();
   updateBookmarkButtonState();
 }
 
-/********** Select Answer **********/
+// Select Answer
 function selectAnswer(selected) {
   const qIndex = currentQuestion;
   const correct = shuffledQuestions[qIndex].answer;
 
-  const buttons = optionsEl.querySelectorAll("button");
-  buttons.forEach(btn => btn.classList.remove("selected"));
-
-  const selectedBtn = Array.from(buttons).find(btn => btn.textContent === selected);
+  [...optionsEl.querySelectorAll("button")].forEach(btn => btn.classList.remove("selected"));
+  const selectedBtn = [...optionsEl.querySelectorAll("button")].find(btn => btn.textContent === selected);
   if (selectedBtn) selectedBtn.classList.add("selected");
 
   if (!answeredQuestions[qIndex]) {
     answeredQuestions[qIndex] = true;
     if (selected === correct) score++;
-    
-    // Only add unanswered questions to bookmarks when answering the last question
-    if (currentQuestion === questions.length - 1) {
-      let addedQuestions = false;
-      // Add all unanswered questions to bookmarks
-      answeredQuestions.forEach((answered, index) => {
-        if (!answered) {
-          bookmarkedQuestions.add(index);
-          addedQuestions = true;
-        }
-      });
-      
-      // Only show animation if questions were actually added
-      if (addedQuestions) {
-        updateBookmarkDisplay();
-        updateBookmarkButtonState();
-      }
-
-      // Update finish button immediately
-      finishBtn.classList.add('pulse-animation');
-      const firstUnansweredIndex = answeredQuestions.findIndex(a => !a);
-      if (firstUnansweredIndex !== -1) {
-        finishBtn.innerHTML = `Finish (Question ${firstUnansweredIndex + 1} not answered)`;
-        finishBtn.classList.add('has-unanswered');
-      } else {
-        finishBtn.innerHTML = 'Finish';
-        finishBtn.classList.remove('has-unanswered');
-      }
-    }
+    handleLastQuestionBookmark();
   } else {
     const previous = userAnswers[qIndex];
     if (previous !== correct && selected === correct) score++;
@@ -170,13 +115,9 @@ function selectAnswer(selected) {
   updateBookmarkButtonState();
 }
 
-/********** Bookmark **********/
+// Toggle Bookmark
 function toggleBookmark(index) {
-  if (bookmarkedQuestions.has(index)) {
-    bookmarkedQuestions.delete(index);
-  } else {
-    bookmarkedQuestions.add(index);
-  }
+  bookmarkedQuestions.has(index) ? bookmarkedQuestions.delete(index) : bookmarkedQuestions.add(index);
   updateBookmarkDisplay();
   showQuestion();
 }
@@ -208,33 +149,16 @@ function updateBookmarkDisplay() {
   });
 }
 
-/********** Navigation **********/
-nextBtn.addEventListener("click", () => {
-  if (currentQuestion < questions.length - 1) {
-    currentQuestion++;
-    showQuestion();
-  }
-});
-
-prevBtn.addEventListener("click", () => {
-  if (currentQuestion > 0) {
-    currentQuestion--;
-    showQuestion();
-  }
-});
-
-finishBtn.addEventListener("click", () => {
+// Navigation
+nextBtn.onclick = () => { if (currentQuestion < questions.length - 1) currentQuestion++; showQuestion(); };
+prevBtn.onclick = () => { if (currentQuestion > 0) currentQuestion--; showQuestion(); };
+finishBtn.onclick = () => {
   const unanswered = answeredQuestions.filter(a => !a).length;
-  if (unanswered > 0) {
-    if (confirm(`You have ${unanswered} unanswered questions. Do you want to finish the exam?`)) {
-      endQuiz();
-    }
-  } else {
-    endQuiz();
-  }
-});
+  if (unanswered > 0) confirm(`You have ${unanswered} unanswered questions. Finish exam?`) && endQuiz();
+  else endQuiz();
+};
 
-/********** Timer **********/
+// Timer
 function updateTimer() {
   timeLeft--;
   timerEl.textContent = `Time Left: ${timeLeft}s`;
@@ -244,168 +168,130 @@ function updateTimer() {
   }
 }
 
-/********** Finish Quiz **********/
+// End Quiz
 function endQuiz() {
-  // Bookmark unanswered questions
-  answeredQuestions.forEach((answered, index) => {
-    if (!answered) {
-      bookmarkedQuestions.add(index);
-    }
-  });
+  answeredQuestions.forEach((answered, index) => { if (!answered) bookmarkedQuestions.add(index); });
   updateBookmarkDisplay();
 
-  if (document.exitFullscreen) {
-    document.exitFullscreen();
-  } else if (document.webkitExitFullscreen) { /* Safari */
-    document.webkitExitFullscreen();
-  } else if (document.msExitFullscreen) { /* IE11 */
-    document.msExitFullscreen();
-  }
-  
+  if (document.exitFullscreen) document.exitFullscreen();
+  else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+  else if (document.msExitFullscreen) document.msExitFullscreen();
+
   clearInterval(timer);
   localStorage.setItem("score", score);
   localStorage.setItem("totalQuestions", questions.length);
- 
-  // Redirect to result page
   window.location.replace("result.html");
 }
 
-/********** Check Finish State **********/
+// Helper Functions
 function checkIfCanFinish() {
-  finishBtn.disabled = !answeredQuestions.every(val => val === true);
+  finishBtn.disabled = !answeredQuestions.every(val => val);
 }
 
-/********** Bookmark Toggle Events **********/
-document.getElementById('bookmarkToggle').addEventListener('click', () => {
+function handleLastQuestionBookmark() {
+  if (currentQuestion !== questions.length - 1) return;
+
+  let added = false;
+  answeredQuestions.forEach((a, i) => {
+    if (!a) {
+      bookmarkedQuestions.add(i);
+      added = true;
+    }
+  });
+
+  if (added) {
+    updateBookmarkDisplay();
+    updateBookmarkButtonState();
+  }
+  handleFinishButtonDisplay();
+}
+
+function handleFinishButtonDisplay() {
+  const firstUnansweredIndex = answeredQuestions.findIndex(a => !a);
+  const isLast = currentQuestion === questions.length - 1;
+  if (isLast && answeredQuestions[currentQuestion]) {
+    finishBtn.classList.add('pulse-animation');
+    finishBtn.innerHTML = firstUnansweredIndex !== -1 ? `Finish (Question ${firstUnansweredIndex + 1} not answered)` : 'Finish';
+    finishBtn.classList.toggle('has-unanswered', firstUnansweredIndex !== -1);
+  } else {
+    finishBtn.className = finishBtn.className.replace('pulse-animation', '').replace('has-unanswered', '').trim();
+    finishBtn.innerHTML = 'Finish';
+  }
+}
+
+function updateProgressBar() {
+  const bar = document.getElementById('progress-bar');
+  if (bar) bar.style.width = `${((currentQuestion + 1) / questions.length) * 100}%`;
+}
+
+function updateBookmarkButtonState() {
+  const btn = document.getElementById('bookmarkToggle');
+  const active = answeredQuestions.some(a => !a) && bookmarkedQuestions.size > 0;
+  btn.classList.toggle('pulse-animation', active);
+}
+
+// Bookmark UI Events
+document.getElementById('bookmarkToggle').onclick = () => {
   document.getElementById('bookmark-list').classList.toggle('open');
   document.getElementById('bookmarkToggle').classList.toggle('active');
-});
+};
 
-document.getElementById('closeBookmark').addEventListener('click', () => {
+document.getElementById('closeBookmark').onclick = () => {
   document.getElementById('bookmark-list').classList.remove('open');
   document.getElementById('bookmarkToggle').classList.remove('active');
-});
+};
 
-document.getElementById('clearBookmarks').addEventListener('click', () => {
+document.getElementById('clearBookmarks').onclick = () => {
   bookmarkedQuestions.clear();
   updateBookmarkDisplay();
   showQuestion();
-});
+};
 
-/********** Start Button **********/
-startBtn.addEventListener('click', () => {
-  // Request fullscreen
+// Start Button
+startBtn.onclick = () => {
   const elem = document.documentElement;
-  if (elem.requestFullscreen) {
-    elem.requestFullscreen();
-  } else if (elem.webkitRequestFullscreen) { /* Safari */
-    elem.webkitRequestFullscreen();
-  } else if (elem.msRequestFullscreen) { /* IE11 */
-    elem.msRequestFullscreen();
-  }
-  
-  // Add keyboard event listeners to window
-//   window.addEventListener('keydown', handleKeyPress, true);
+  if (elem.requestFullscreen) elem.requestFullscreen();
+  else if (elem.webkitRequestFullscreen) elem.webkitRequestFullscreen();
+  else if (elem.msRequestFullscreen) elem.msRequestFullscreen();
 
-  
   startBtn.style.display = 'none';
-  document.getElementById('bookmarkToggle').style.display = 'flex'; // Show bookmark button
+  document.getElementById('bookmarkToggle').style.display = 'flex';
   startQuiz();
-});
+};
 
-/************************ */
-
-
-
-
-document.addEventListener('keydown', function (e) {
-  if (
-    document.fullscreenElement ||
-    document.webkitFullscreenElement ||
-    document.mozFullScreenElement ||
-    document.msFullscreenElement
-  ) {
-    const allowedKeys = []; 
-
-    if (!allowedKeys.includes(e.key)) {
+// Fullscreen Handling
+document.addEventListener('keydown', e => {
+  if (document.fullscreenElement || document.webkitFullscreenElement) {
+    if (![].includes(e.key)) {
       e.preventDefault();
       e.stopPropagation();
-      return false;
     }
   }
 }, true);
 
-/************************** */
-// Function to handle key press
 function handleKeyPress(e) {
-  // Only handle keys if in fullscreen
-  if (document.fullscreenElement || 
-      document.webkitFullscreenElement || 
-      document.mozFullScreenElement ||
-      document.msFullscreenElement) {
-    
-    // Show confirmation dialog for ESC key
+  if (document.fullscreenElement || document.webkitFullscreenElement) {
     if (e.key === 'Escape' || e.keyCode === 27) {
       e.preventDefault();
       e.stopPropagation();
-      
-      // Show native confirm dialog
-      if (confirm('هل أنت متأكد من الخروج من الامتحان؟')) {
-        endQuiz();
-      }
-      
-      return false;
+      if (confirm('هل أنت متأكد من الخروج من الامتحان؟')) endQuiz();
     }
   }
 }
 
-// Remove keyboard event listeners when exiting fullscreen
-document.addEventListener('fullscreenchange', handleFullscreenChange);
-document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
-document.addEventListener('mozfullscreenchange', handleFullscreenChange);
-document.addEventListener('MSFullscreenChange', handleFullscreenChange);
-
 function handleFullscreenChange() {
-  if (
-    !document.fullscreenElement &&
-    !document.webkitFullscreenElement &&
-    !document.mozFullScreenElement &&
-    !document.msFullscreenElement
-  ) {
+  if (!document.fullscreenElement && !document.webkitFullscreenElement) {
     document.getElementById('confirmExitModal').style.display = 'flex';
   }
 }
 
-document.getElementById('confirmExitBtn').addEventListener('click', () => {
-  endQuiz();
-});
-
-document.getElementById('cancelExitBtn').addEventListener('click', () => {
+document.getElementById('confirmExitBtn').onclick = endQuiz;
+document.getElementById('cancelExitBtn').onclick = () => {
   document.getElementById('confirmExitModal').style.display = 'none';
-
   const elem = document.documentElement;
-  if (elem.requestFullscreen) {
-    elem.requestFullscreen();
-  } else if (elem.webkitRequestFullscreen) {
-    elem.webkitRequestFullscreen();
-  }
-});
+  if (elem.requestFullscreen) elem.requestFullscreen();
+  else if (elem.webkitRequestFullscreen) elem.webkitRequestFullscreen();
+};
 
 document.addEventListener('fullscreenchange', handleFullscreenChange);
 document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
-document.addEventListener('mozfullscreenchange', handleFullscreenChange);
-document.addEventListener('MSFullscreenChange', handleFullscreenChange);
-
-
-// Add new function to update bookmark button state
-function updateBookmarkButtonState() {
-  const bookmarkToggle = document.getElementById('bookmarkToggle');
-  const hasUnanswered = answeredQuestions.some(a => !a);
-  const hasBookmarks = bookmarkedQuestions.size > 0;
-  
-  if (hasUnanswered && hasBookmarks) {
-    bookmarkToggle.classList.add('pulse-animation');
-  } else {
-    bookmarkToggle.classList.remove('pulse-animation');
-  }
-}
